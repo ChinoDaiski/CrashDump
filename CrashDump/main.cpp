@@ -24,13 +24,14 @@ public:
 		//------------------------------------------------------------------------------------
 		// pure virtual function called 에러 핸들러를 사용자 정의 함수로 우회시킨다.
 		//------------------------------------------------------------------------------------
-
 		_set_purecall_handler(myPurecallHandler);
+
 		SetHandlerDump();
 	}
 
 	static void Crash(void)
 	{
+		// 보호받는 0xffff(64kbyte)까지의 주소값을 건드려 메모리 관련 오류를 유발
 		int* p = nullptr;
 		*p = 0;
 	}
@@ -55,7 +56,9 @@ public:
 		{
 			iWorkingMemory = (int)(pmc.WorkingSetSize / 1024 / 1024);
 		}
+
 		CloseHandle(hProcess);
+
 
 		//------------------------------------------------------------------------------------
 		//현재 날짜와 시간을 알아온다.
@@ -65,10 +68,28 @@ public:
 		GetLocalTime(&stNowTime);
 
 		wsprintf(filename, L"Dump_%d%02d%02d_%02d.%02d.%02d.%02d_%dMB.dmp",
-			stNowTime.wYear, stNowTime.wMonth, stNowTime.wDay, stNowTime.wHour, stNowTime.wMinute, stNowTime.wSecond, DumpCount, iWorkingMemory); 
-		
+			stNowTime.wYear, stNowTime.wMonth, stNowTime.wDay, stNowTime.wHour, stNowTime.wMinute, stNowTime.wSecond, DumpCount, iWorkingMemory);
+
 		wprintf(L"\n\n\n!!! Crash Error !!! %d.%d.%d / %d:%d:%d\n",
-				stNowTime.wYear, stNowTime.wMonth, stNowTime.wDay, stNowTime.wHour, stNowTime.wMinute, stNowTime.wSecond);
+			stNowTime.wYear, stNowTime.wMonth, stNowTime.wDay, stNowTime.wHour, stNowTime.wMinute, stNowTime.wSecond);
+
+
+		//------------------------------------------------------------------------------------
+		// 로그 저장할 파일이 있다면 여기서 파일 만들어서 저장
+		//------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+		//------------------------------------------------------------------------------------
+		// 덤프 메모리 파일 저장
+		//------------------------------------------------------------------------------------
 
 		wprintf(L"Now Save dump file...\n");
 
@@ -87,7 +108,7 @@ public:
 			_MINIDUMP_EXCEPTION_INFORMATION MinidumpExceptionInformation;
 
 			MinidumpExceptionInformation.ThreadId = ::GetCurrentThreadId();
-			MinidumpExceptionInformation.ExceptionPointers = pExceptionPointer; 
+			MinidumpExceptionInformation.ExceptionPointers = pExceptionPointer;
 			MinidumpExceptionInformation.ClientPointers = TRUE;
 
 			MiniDumpWriteDump(
